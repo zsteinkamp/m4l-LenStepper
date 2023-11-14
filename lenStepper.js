@@ -1,7 +1,7 @@
 autowatch = 1
 outlets = 1
 
-var debugLog = true
+var debugLog = false
 
 function debug() {
   if (debugLog) {
@@ -13,6 +13,8 @@ function debug() {
   }
 }
 
+debug('RELOADED')
+
 var numSteps = 8
 var currStep = 1
 var noteLen = 1
@@ -20,6 +22,8 @@ var divMs = 250
 var noteNum = 63
 var noteVel = 100
 var globalEnable = false
+var endNoteTask = null
+var nextNoteTask = null
 
 function setNoteLen(lenPct) {
   //debug(len)
@@ -34,16 +38,21 @@ function setNumSteps(steps) {
 // utility to return a function that will be used to create a note-playing task
 function scheduleEndNote(num) {
   return function () {
-    //debug(num, 0)
-    sendNote(num, 0)
+    //debug('IN_END', num, 0)
+    arguments.callee.task.cancel()
     arguments.callee.task.freepeer()
+    endNoteTask = null
+    sendNote(num, 0)
   }
 }
 
 function scheduleNextNote() {
   return function () {
-    goNext()
+    //debug('IN_NEXT')
+    arguments.callee.task.cancel()
     arguments.callee.task.freepeer()
+    endNoteTask = null
+    goNext()
   }
 }
 
@@ -58,8 +67,12 @@ function noteIn(num, vel) {
   noteVel = vel
   var enable = !!(vel > 0)
   if (enable !== globalEnable) {
+    //debug('TOGGLE TO', enable)
+    cancelTasks()
+    //debug('CANCELED')
     globalEnable = enable
     sendSeq(globalEnable ? 1 : 0)
+    //debug('SENT SEQ')
   }
 }
 
@@ -72,18 +85,33 @@ function goNext() {
   sendSeq(nextStep)
 }
 
+function cancelTasks() {
+  if (endNoteTask) {
+    endNoteTask.execute()
+    endNoteTask = null
+  }
+  if (nextNoteTask) {
+    nextNoteTask.cancel()
+    nextNoteTask = null
+  }
+}
+
 function fromSeq(step, divisions) {
+  //debug(globalEnable, step, divisions)
   if (!globalEnable) {
     return
   }
-  //debug(step, divisions)
   currStep = step
+  var noteGap = divisions * divMs
+
+  //debug('GAP DIVS DIVMS', noteGap, divisions, divMs)
+  cancelTasks()
+
   sendNote(noteNum, noteVel)
-  //debug('DIVms', divisions * divMs)
-  var a = new Task(scheduleEndNote(noteNum), this)
-  a.schedule(divisions * divMs * noteLen)
-  var b = new Task(scheduleNextNote(), this)
-  b.schedule(divisions * divMs)
+  endNoteTask = new Task(scheduleEndNote(noteNum), this)
+  endNoteTask.schedule(noteGap * noteLen - 8)
+  nextNoteTask = new Task(scheduleNextNote(), this)
+  nextNoteTask.schedule(noteGap - 4)
 }
 
 function sendSeq(msg) {
