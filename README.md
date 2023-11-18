@@ -18,6 +18,7 @@ The sequencer begins on note-on and stops on note-off. When beginning, it always
 
 Direct download links below.
 
+- [v2](https://github.com/zsteinkamp/m4l-LenStepper/raw/main/frozen/LenStepper-v2.amxd) - 2023-11-17 - Reimplemented stuff that was javascript to native Max objects. Javascript timers are not accurate enough for music.
 - [v1](https://github.com/zsteinkamp/m4l-LenStepper/raw/main/frozen/LenStepper-v1.amxd) - 2023-11-12 - Initial release.
 
 ## Installation / Setup
