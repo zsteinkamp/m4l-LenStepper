@@ -20,6 +20,7 @@ The sequencer begins on note-on and stops on note-off. When beginning, it always
 
 Direct download links below.
 
+- [v5](https://github.com/zsteinkamp/m4l-LenStepper/raw/main/frozen/LenStepper-v5.amxd) - 2024-10-17 - Fix bug in recalling presets with Live Sets.
 - [v4](https://github.com/zsteinkamp/m4l-LenStepper/raw/main/frozen/LenStepper-v4.amxd) - 2024-08-09 - Added presets; Fixed bugs where notes would be spuriously output when the device was loaded.
 - [v3](https://github.com/zsteinkamp/m4l-LenStepper/raw/main/frozen/LenStepper-v3.amxd) - 2023-11-18 - Restricted to strictly monophonic to solve some issues with note-on. Fixed bug around first note after changing notes playing the old note.
 - [v2](https://github.com/zsteinkamp/m4l-LenStepper/raw/main/frozen/LenStepper-v2.amxd) - 2023-11-17 - Reimplemented stuff that was javascript to native Max objects. Javascript timers are not accurate enough for music.
